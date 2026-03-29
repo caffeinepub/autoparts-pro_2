@@ -515,12 +515,24 @@ function HeroSection() {
         <div className="absolute right-40 top-1/2 -translate-y-1/2 w-[1px] h-40 bg-primary/25" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex items-center gap-8">
+        <motion.div
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="flex-1 mt-8 lg:mt-0"
+        >
+          <img
+            src="/assets/generated/toyota-land-cruiser-hero.dim_1200x600.jpg"
+            alt="Toyota Land Cruiser"
+            className="w-full max-w-2xl mr-auto drop-shadow-2xl rounded-lg"
+          />
+        </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="max-w-2xl"
+          className="max-w-2xl flex-1"
         >
           <Badge className="mb-5 bg-primary/20 text-primary border-primary/40 text-xs font-semibold uppercase tracking-widest">
             PERFORMANCE YOU CAN TRUST
