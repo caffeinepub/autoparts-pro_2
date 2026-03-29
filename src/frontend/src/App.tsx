@@ -1497,14 +1497,32 @@ function Footer() {
             </p>
             <div className="flex gap-3">
               {[
-                { Icon: Facebook, label: "Facebook" },
-                { Icon: Twitter, label: "Twitter" },
-                { Icon: Instagram, label: "Instagram" },
-                { Icon: Youtube, label: "YouTube" },
-              ].map(({ Icon, label }) => (
+                {
+                  Icon: Facebook,
+                  label: "Facebook",
+                  href: "https://www.facebook.com/alkhanautoimports",
+                },
+                {
+                  Icon: Twitter,
+                  label: "Twitter",
+                  href: "https://www.twitter.com/alkhanautoimports",
+                },
+                {
+                  Icon: Instagram,
+                  label: "Instagram",
+                  href: "https://www.instagram.com/alkhanautoimports",
+                },
+                {
+                  Icon: Youtube,
+                  label: "YouTube",
+                  href: "https://www.youtube.com/@alkhanautoimports",
+                },
+              ].map(({ Icon, label, href }) => (
                 <a
                   key={label}
-                  href="#home"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={label}
                   className="w-8 h-8 bg-primary/10 border border-border rounded-full flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
                 >
@@ -1625,6 +1643,45 @@ function AppContent() {
       </main>
       <Footer />
       <Toaster position="top-right" richColors />
+      {/* Fixed Social Media Bar */}
+      <div className="fixed right-0 top-1/3 z-40 flex flex-col gap-1">
+        <a
+          href="https://www.facebook.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-ocid="social.facebook.link"
+          className="w-9 h-9 flex items-center justify-center bg-black/80 text-primary border-l-2 border-primary hover:bg-primary hover:text-black transition-colors"
+        >
+          <Facebook size={16} />
+        </a>
+        <a
+          href="https://www.instagram.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-ocid="social.instagram.link"
+          className="w-9 h-9 flex items-center justify-center bg-black/80 text-primary border-l-2 border-primary hover:bg-primary hover:text-black transition-colors"
+        >
+          <Instagram size={16} />
+        </a>
+        <a
+          href="https://www.twitter.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-ocid="social.twitter.link"
+          className="w-9 h-9 flex items-center justify-center bg-black/80 text-primary border-l-2 border-primary hover:bg-primary hover:text-black transition-colors"
+        >
+          <Twitter size={16} />
+        </a>
+        <a
+          href="https://www.youtube.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-ocid="social.youtube.link"
+          className="w-9 h-9 flex items-center justify-center bg-black/80 text-primary border-l-2 border-primary hover:bg-primary hover:text-black transition-colors"
+        >
+          <Youtube size={16} />
+        </a>
+      </div>
     </div>
   );
 }
