@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   ArrowRight,
   CalendarDays,
+  Car,
   CheckCircle2,
   ChevronRight,
   Clock,
@@ -137,6 +138,13 @@ const SEED_BLOG_POSTS: BlogPost[] = [
 ];
 
 const CATEGORIES = [
+  {
+    key: "toyota",
+    label: "Toyota Parts",
+    icon: Car,
+    description: "Genuine Toyota Prado & Land Cruiser parts",
+    count: "500+",
+  },
   {
     key: "engine",
     label: "Engine Parts",
@@ -393,8 +401,8 @@ function Navbar() {
               alt="AL Khan Auto & Imports"
               className="w-9 h-9 rounded object-cover border border-primary/40"
             />
-            <span className="text-foreground font-bold text-lg tracking-wide hidden sm:block">
-              AL KHAN <span className="text-primary">AUTO</span>
+            <span className="text-foreground font-bold text-base tracking-wide">
+              AL KHAN <span className="text-primary">AUTO &amp; IMPORTS</span>
             </span>
           </a>
 
@@ -423,6 +431,16 @@ function Navbar() {
             >
               <Search className="w-5 h-5" />
             </button>
+            <a
+              href="https://wa.me/923071111234"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-green-500 hover:text-green-400 p-2 transition-colors"
+              aria-label="WhatsApp"
+              data-ocid="navbar.whatsapp"
+            >
+              <MessageCircle className="w-5 h-5" />
+            </a>
             <button
               type="button"
               className="relative text-muted-foreground hover:text-primary p-2 transition-colors"
@@ -505,18 +523,22 @@ function HeroSection() {
           className="max-w-2xl"
         >
           <Badge className="mb-5 bg-primary/20 text-primary border-primary/40 text-xs font-semibold uppercase tracking-widest">
-            Premium Quality Parts
+            PERFORMANCE YOU CAN TRUST
           </Badge>
+          <p className="text-primary text-lg sm:text-xl font-bold uppercase tracking-widest mb-2">
+            AL KAHN AUTO &amp; IMPORTS
+          </p>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-foreground uppercase leading-tight tracking-tight mb-4">
-            AL KHAN
+            PREMIUM PERFORMANCE
             <br />
-            <span className="text-primary">AUTO &amp;</span>
+            <span className="text-primary">PARTS FOR</span>
             <br />
-            IMPORTS
+            EVERY DRIVE
           </h1>
           <p className="text-muted-foreground text-base sm:text-lg mb-8 max-w-lg leading-relaxed">
             Lahore's trusted supplier of Toyota Prado &amp; Land Cruiser genuine
-            parts. Over 5,000 parts in stock, delivered across Pakistan.
+            parts. Over 200,000 genuine and aftermarket parts in stock,
+            delivered across Pakistan.
           </p>
           <div className="flex flex-wrap gap-4">
             <a href="#products">
@@ -640,29 +662,124 @@ function CarShowcaseSection() {
 
 // ─── Featured Products ──────────────────────────────────────────────────────
 
+const PRODUCT_TABS = [
+  { key: "prado", label: "Toyota Prado Parts" },
+  { key: "landcruiser", label: "Toyota Land Cruiser Parts" },
+  { key: "engine", label: "Engine Parts" },
+  { key: "brake", label: "Brake Parts" },
+  { key: "suspension", label: "Suspension Parts" },
+  { key: "accessories", label: "Accessories" },
+  { key: "electrical", label: "Electrical Parts" },
+];
+
+function ToyotaPartCard({
+  part,
+  index,
+  model,
+}: {
+  part: { name: string; image: string; price: number };
+  index: number;
+  model: string;
+}) {
+  const waModel =
+    model === "Toyota Prado" ? "Toyota%20Prado" : "Toyota%20Land%20Cruiser";
+  return (
+    <motion.div
+      key={`${model}-${part.name}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.07, duration: 0.4 }}
+      className="bg-card rounded-lg border border-border overflow-hidden group hover:border-primary hover:shadow-[0_0_20px_oklch(0.76_0.12_85/0.15)] transition-all duration-300"
+      data-ocid={`products.item.${index + 1}`}
+    >
+      <div className="relative overflow-hidden h-44 bg-muted">
+        <img
+          src={part.image}
+          alt={`${model} ${part.name}`}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+        <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground border-0 text-xs font-semibold">
+          {model}
+        </Badge>
+      </div>
+      <div className="p-4">
+        <h3 className="font-semibold text-sm text-foreground mb-3 leading-snug">
+          {part.name}
+        </h3>
+        <div className="flex items-center justify-between">
+          <span className="text-lg font-bold text-primary">
+            PKR {part.price.toLocaleString()}
+          </span>
+          <a
+            href={`https://wa.me/923071111234?text=Hello%2C%20I%20am%20interested%20in%20${waModel}%20${encodeURIComponent(part.name)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button
+              size="sm"
+              className="bg-green-600 hover:bg-green-500 text-white border-0 text-xs font-semibold"
+              data-ocid={`products.item.${index + 1}`}
+            >
+              <MessageCircle className="w-3 h-3 mr-1" /> Inquire
+            </Button>
+          </a>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function ProductsSection() {
   const { data: products, isLoading } = useProducts();
+  const [activeTab, setActiveTab] = useState("prado");
   const displayProducts =
-    products && products.length > 0 ? products.slice(0, 6) : SEED_PRODUCTS;
+    products && products.length > 0 ? products : SEED_PRODUCTS;
+
+  const filteredProducts = displayProducts.filter(
+    (p) => String(p.category as unknown) === activeTab,
+  );
 
   return (
-    <section className="py-20 bg-navy">
+    <section id="products" className="py-20 bg-navy">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-10"
         >
           <p className="text-primary text-xs font-semibold uppercase tracking-widest mb-2">
-            Best Sellers
+            Browse By Category
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-foreground mb-3">
-            TOP RATED PARTS
+            OUR PRODUCTS
           </h2>
           <div className="w-16 h-1 bg-primary mx-auto" />
         </motion.div>
 
+        {/* Category tabs */}
+        <div className="overflow-x-auto pb-2 mb-8">
+          <div className="flex gap-2 min-w-max mx-auto justify-start sm:justify-center">
+            {PRODUCT_TABS.map((tab) => (
+              <button
+                type="button"
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide border transition-all duration-200 whitespace-nowrap ${
+                  activeTab === tab.key
+                    ? "bg-primary text-primary-foreground border-primary shadow-[0_0_12px_oklch(0.76_0.12_85/0.4)]"
+                    : "bg-card text-muted-foreground border-border hover:border-primary hover:text-primary"
+                }`}
+                data-ocid={"products.tab"}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tab content */}
         {isLoading ? (
           <div
             className="flex justify-center py-16"
@@ -670,15 +787,45 @@ function ProductsSection() {
           >
             <Loader2 className="w-10 h-10 animate-spin text-primary" />
           </div>
-        ) : (
+        ) : activeTab === "prado" ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+            {TOYOTA_PARTS.map((part, i) => (
+              <ToyotaPartCard
+                key={part.name}
+                part={part}
+                index={i}
+                model="Toyota Prado"
+              />
+            ))}
+          </div>
+        ) : activeTab === "landcruiser" ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+            {TOYOTA_PARTS.map((part, i) => (
+              <ToyotaPartCard
+                key={part.name}
+                part={part}
+                index={i}
+                model="Toyota Land Cruiser"
+              />
+            ))}
+          </div>
+        ) : filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayProducts.map((product, i) => (
+            {filteredProducts.map((product, i) => (
               <ProductCard
                 key={product.id.toString()}
                 product={product}
                 index={i}
               />
             ))}
+          </div>
+        ) : (
+          <div
+            className="text-center py-16 text-muted-foreground"
+            data-ocid="products.empty_state"
+          >
+            <Package className="w-12 h-12 mx-auto mb-3 opacity-40" />
+            <p className="text-sm">No products found in this category.</p>
           </div>
         )}
 
@@ -749,17 +896,13 @@ function ToyotaPartsSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-10"
         >
-          <div className="inline-flex items-center gap-2 mb-4">
-            <div className="h-px w-12 bg-primary" />
-            <p className="text-primary text-xs font-semibold uppercase tracking-widest">
-              Genuine Parts
-            </p>
-            <div className="h-px w-12 bg-primary" />
-          </div>
+          <p className="text-primary text-xs font-semibold uppercase tracking-widest mb-2">
+            Genuine OEM
+          </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-foreground mb-3">
-            TOYOTA PRADO &amp; LAND CRUISER
+            TOYOTA GENUINE PARTS
           </h2>
           <div className="w-16 h-1 bg-primary mx-auto mb-4" />
           <p className="text-muted-foreground max-w-xl mx-auto text-sm">
@@ -768,22 +911,13 @@ function ToyotaPartsSection() {
           </p>
         </motion.div>
 
-        {/* Official supplier banner */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-10 rounded-xl border border-primary/40 p-4 flex items-center gap-4"
-          style={{
-            background:
-              "linear-gradient(90deg, oklch(0.13 0.02 85) 0%, oklch(0.09 0.01 85) 100%)",
-          }}
+          className="text-center mb-10"
         >
-          <ShieldCheck className="w-8 h-8 text-primary shrink-0" />
-          <div>
-            <p className="text-primary font-bold text-sm uppercase tracking-wide">
-              Official Parts Supplier
-            </p>
+          <div className="inline-block bg-primary/10 border border-primary/30 rounded-lg px-4 py-2">
             <p className="text-muted-foreground text-xs">
               AL Khan Auto &amp; Imports is an authorized supplier of genuine
               Toyota Prado &amp; Land Cruiser parts in Pakistan.
@@ -798,15 +932,14 @@ function ToyotaPartsSection() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.07, duration: 0.4 }}
-              className="bg-card rounded-xl border border-border overflow-hidden group hover:border-primary hover:shadow-[0_0_18px_oklch(0.76_0.12_85/0.15)] transition-all duration-300"
-              data-ocid={`products.item.${i + 1}`}
+              transition={{ delay: i * 0.05 }}
+              className="bg-card rounded-xl overflow-hidden border border-border group"
             >
-              <div className="relative overflow-hidden h-36 bg-muted">
+              <div className="relative overflow-hidden">
                 <img
                   src={part.image}
                   alt={part.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-36 object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <span className="absolute bottom-2 left-2 text-foreground font-bold text-sm">
@@ -847,22 +980,21 @@ function AboutSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
           >
             <p className="text-primary text-xs font-semibold uppercase tracking-widest mb-2">
-              Our Story
+              About Us
             </p>
-            <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-foreground mb-6">
-              ABOUT AL KHAN AUTO &amp; IMPORTS
+            <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-foreground mb-3">
+              WHO WE ARE
             </h2>
-            <div className="w-16 h-1 bg-primary mb-8" />
-            <p className="text-muted-foreground leading-relaxed mb-5">
-              AL Khan Auto &amp; Imports is Lahore's premier destination for
-              Toyota Prado and Land Cruiser genuine parts. Built on a foundation
-              of{" "}
+            <div className="w-16 h-1 bg-primary mb-6" />
+            <p className="text-muted-foreground leading-relaxed mb-6">
+              AL Khan Auto &amp; Imports has been Lahore&apos;s trusted source
+              for Toyota Prado and Land Cruiser genuine parts. Built on a
+              foundation of{" "}
               <strong className="text-foreground">
                 quality, honesty, and expertise
               </strong>
@@ -896,20 +1028,12 @@ function AboutSection() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="space-y-4"
           >
-            <div
-              className="rounded-xl p-6 border border-primary/30"
-              style={{
-                background:
-                  "linear-gradient(135deg, oklch(0.13 0.015 85) 0%, oklch(0.09 0.008 85) 100%)",
-              }}
-            >
-              <h3 className="text-lg font-bold uppercase tracking-wide mb-4 text-foreground">
+            <div className="bg-card rounded-xl p-6 border border-border mb-6">
+              <h3 className="font-bold text-foreground text-lg mb-4">
                 Our Team
               </h3>
               <div className="space-y-4">
@@ -992,10 +1116,10 @@ function ServicesSection() {
           <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-foreground mb-3">
             OUR SERVICES
           </h2>
-          <div className="w-16 h-1 bg-primary mx-auto mb-6" />
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Beyond just parts, we provide comprehensive automotive services to
-            keep your vehicle running at peak performance.
+          <div className="w-16 h-1 bg-primary mx-auto mb-4" />
+          <p className="text-muted-foreground max-w-xl mx-auto text-sm">
+            From installation to inspection, our expert team helps keep your
+            vehicle running at peak performance.
           </p>
         </motion.div>
 
@@ -1008,14 +1132,13 @@ function ServicesSection() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.07, duration: 0.5 }}
-                className="bg-card rounded-xl p-6 border border-border hover:border-primary hover:shadow-[0_0_18px_oklch(0.76_0.12_85/0.12)] hover:-translate-y-1 transition-all duration-300 group"
-                data-ocid={`services.item.${i + 1}`}
+                transition={{ delay: i * 0.1 }}
+                className="bg-card rounded-xl p-6 border border-border"
               >
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary transition-colors duration-300">
-                  <Icon className="w-6 h-6 text-primary group-hover:text-primary-foreground transition-colors" />
+                <div className="w-10 h-10 bg-primary/15 rounded-lg flex items-center justify-center mb-4">
+                  <Icon className="w-5 h-5 text-primary" />
                 </div>
-                <h3 className="font-bold text-foreground mb-2 uppercase tracking-wide text-sm">
+                <h3 className="font-bold text-foreground mb-2">
                   {service.title}
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -1047,14 +1170,13 @@ function BlogSection() {
           className="text-center mb-12"
         >
           <p className="text-primary text-xs font-semibold uppercase tracking-widest mb-2">
-            Latest Updates
+            From Our Workshop
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-foreground mb-3">
-            FROM THE BLOG
+            LATEST ARTICLES
           </h2>
           <div className="w-16 h-1 bg-primary mx-auto" />
         </motion.div>
-
         {isLoading ? (
           <div
             className="flex justify-center py-16"
@@ -1193,7 +1315,7 @@ function ContactSection() {
                 </label>
                 <Textarea
                   id="contact-message"
-                  placeholder="Tell us what part you're looking for or how we can help..."
+                  placeholder="Tell us what part you are looking for or how we can help..."
                   rows={5}
                   value={form.message}
                   onChange={(e) =>
@@ -1222,7 +1344,7 @@ function ContactSection() {
                   className="text-green-500 text-sm text-center font-medium"
                   data-ocid="contact.success_state"
                 >
-                  ✓ Message sent successfully!
+                  Message sent successfully!
                 </p>
               )}
               {isError && (
@@ -1230,7 +1352,7 @@ function ContactSection() {
                   className="text-destructive text-sm text-center font-medium"
                   data-ocid="contact.error_state"
                 >
-                  ✗ Failed to send. Please try again.
+                  Failed to send. Please try again.
                 </p>
               )}
             </form>
@@ -1310,9 +1432,9 @@ function ContactSection() {
                       Business Hours
                     </div>
                     <div className="text-muted-foreground text-sm">
-                      Mon – Sat: 9:00 AM – 8:00 PM
+                      Mon - Sat: 9:00 AM - 8:00 PM
                       <br />
-                      Sunday: 11:00 AM – 5:00 PM
+                      Sunday: 11:00 AM - 5:00 PM
                     </div>
                   </div>
                 </div>
@@ -1366,11 +1488,11 @@ function Footer() {
                 className="w-9 h-9 rounded object-cover border border-primary/40"
               />
               <span className="font-bold text-lg tracking-wide">
-                AL KHAN <span className="text-primary">AUTO</span>
+                AL KHAN <span className="text-primary">AUTO &amp; IMPORTS</span>
               </span>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed mb-5">
-              Lahore's trusted supplier of genuine Toyota Prado &amp; Land
+              Lahore&apos;s trusted supplier of genuine Toyota Prado &amp; Land
               Cruiser parts. Quality you can count on.
             </p>
             <div className="flex gap-3">
@@ -1441,7 +1563,7 @@ function Footer() {
                 "Returns & Exchanges",
                 "Warranty Policy",
                 "Shipping Info",
-                "FAQs",
+                "FAQ",
               ].map((item) => (
                 <li key={item}>
                   <a
@@ -1455,13 +1577,10 @@ function Footer() {
             </ul>
           </div>
         </div>
-      </div>
 
-      {/* Bottom bar */}
-      <div className="border-t border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-xs">
-            © {year} AL Khan Auto &amp; Imports. Built with ❤️ using{" "}
+            &copy; {year} AL Khan Auto &amp; Imports. Built with love using{" "}
             <a
               href={utm}
               target="_blank"
